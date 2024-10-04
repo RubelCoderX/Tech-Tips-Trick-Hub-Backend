@@ -16,7 +16,7 @@ const handleDuplicateError = (err: any): TGenericErrorResponse => {
   const statusCode = 400
   return {
     statusCode,
-    message: 'This Department Already Exists!',
+    message: 'Duplicate Error',
     errorSources,
   }
 }

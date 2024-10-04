@@ -1,25 +1,30 @@
-import express, { Application, Request, Response } from 'express'
-import cookieParser from 'cookie-parser'
-
-import notFound from './app/middleware/notFound'
+import express, { Request, Response } from 'express'
+import router from './app/routes'
+import cors from 'cors'
 import globalErrorHandler from './app/middleware/globalErrorHandler'
+import notFound from './app/middleware/notFound'
+import cookieParser from 'cookie-parser'
+import config from './app/config'
 
-const app: Application = express()
+const app = express()
 
 //parser
-
 app.use(express.json())
 app.use(cookieParser())
-// app.use(cors({ origin: ['http://localhost:5173'] }));
-
-//application routes
-// app.use("/api/v1", router);
+app.use(
+  cors({
+    credentials: true,
+    origin: [config.client_url as string],
+  }),
+)
+//application route
+app.use('/api/v1', router)
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Welcome to First Project!')
+  res.send('Welcom to Simple Assignment 6!')
 })
-// global error handler
+
 app.use(globalErrorHandler)
-// Not Found
+//not found
 app.use(notFound)
 export default app
