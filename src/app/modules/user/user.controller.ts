@@ -59,6 +59,35 @@ const deleteUserFromDB = catchAsync(async (req, res) => {
     data: result,
   })
 })
+const toggleFollowFromDB = catchAsync(async (req, res) => {
+  const followingId = req.params.id
+
+  const followerEmail = req.user.email
+
+  const result = await UserServices.toggleFollowUserIntoDB(
+    followingId,
+    followerEmail,
+  )
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Follow Action Successfully',
+    data: result,
+  })
+})
+const userManageStatusFromDB = catchAsync(async (req, res) => {
+  const id = req.params.id
+
+  const action: 'unblock' | 'block' = req.query.action as 'unblock' | 'block'
+
+  const result = await UserServices.userManageStatus(id, action)
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User status updated successfully',
+    data: result,
+  })
+})
 
 export const UserControllers = {
   createUserFromDB,
@@ -67,4 +96,6 @@ export const UserControllers = {
   updateUserFromDB,
   deleteUserFromDB,
   getMe,
+  toggleFollowFromDB,
+  userManageStatusFromDB,
 }

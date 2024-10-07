@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose'
+import mongoose, { model, Schema } from 'mongoose'
 
 const commentSchema = new Schema(
   {
@@ -34,9 +34,9 @@ const postSchema = new Schema(
     category: {
       type: String,
       enum: [
-        'Web',
+        'Watch',
         'Software Engineering',
-        'AI',
+        'Tech',
         'ML',
         'VR',
         'Mobile',
@@ -53,14 +53,20 @@ const postSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    upvotes: {
-      type: Number,
-      default: 0,
-    },
-    downVotes: {
-      type: Number,
-      default: 0,
-    },
+    upVotes: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+        default: [],
+      },
+    ],
+    downVotes: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+        default: [],
+      },
+    ],
     comments: [commentSchema],
     images: {
       type: [String],

@@ -51,9 +51,20 @@ const forgetPasswordFromDB = catchAsync(async (req, res) => {
     data: result,
   })
 })
+const toggoleUserRoleFromDB = catchAsync(async (req, res) => {
+  const { userId } = req.params
+  const result = await AuthService.toggoleUserRole(userId)
+  sendResponse(res, {
+    success: true,
+    message: 'User role toggled successfully',
+    statusCode: httpStatus.OK,
+    data: result,
+  })
+})
 export const AuthController = {
   createLoginUserIntoDB,
   createChangePasswordIntoDB,
   refreshToken,
   forgetPasswordFromDB,
+  toggoleUserRoleFromDB,
 }

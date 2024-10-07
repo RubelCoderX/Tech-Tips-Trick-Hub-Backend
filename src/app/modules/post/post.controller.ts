@@ -94,12 +94,16 @@ const updateCommentFromDB = catchAsync(async (req, res) => {
   })
 })
 const votePost = catchAsync(async (req, res) => {
+  const userId = req.user.userId
+
   const { postId } = req.params
   const { action } = req.body
+
   if (!['upvote', 'downvote'].includes(action)) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Invalid action')
   }
-  const result = await PostServices.votePostIntoDB(postId, action)
+  const result = await PostServices.votePostIntoDB(userId, postId, action)
+
   sendResponse(res, {
     success: true,
     message: 'Post voted successfully',

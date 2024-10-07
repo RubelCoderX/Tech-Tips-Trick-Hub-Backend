@@ -3,6 +3,7 @@ import AppError from '../../error/AppError'
 import { IComment, IPost } from './post.interface'
 import Post from './post.model'
 import { User } from '../user/user.model'
+import { Types } from 'mongoose'
 
 const createPostIntoDB = async (payload: IPost) => {
   const post = (await (await Post.create(payload)).populate('author')).populate(
@@ -15,6 +16,8 @@ const getAllPostsFromDB = async () => {
   const posts = await Post.find()
     .populate('author')
     .populate('comments.user')
+    .populate('upVotes')
+    .populate('downVotes')
     .sort('-createdAt')
   return posts
 }
@@ -124,6 +127,7 @@ const commentsUpdateIntoDB = async (
   return updatedPost
 }
 const votePostIntoDB = async (
+  userId: string,
   postId: string,
   action: 'upvote' | 'downvote',
 ) => {
@@ -134,14 +138,23 @@ const votePostIntoDB = async (
   if (post.isDeleted) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Post already deleted')
   }
+  const upVotesArray = Array.isArray(post.upVotes) ? post.upVotes : []
+  const downVotesArray = Array.isArray(post.downVotes) ? post.downVotes : []
+
+  post.upVotes = upVotesArray.filter(id => id.toString() !== userId)
+  post.downVotes = downVotesArray.filter(id => id.toString() !== userId)
+
   if (action === 'upvote') {
-    post.upvotes += 1
-  } else if (action === 'downvote') {
-    post.downVotes += 1
+    post.upVotes.push(new Types.ObjectId(userId))
+  }
+  if (action === 'downvote') {
+    post.downVotes.push(new Types.ObjectId(userId))
   }
   const updatedPost = await post.save()
+
   return updatedPost
 }
+
 const myPostsIntoDB = async (email: string) => {
   const user = await User.isUserExists(email)
   if (!user) {

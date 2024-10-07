@@ -163,10 +163,78 @@ const forgetPassword = async (email: string) => {
 
   sendEmail(user.email, resetUILink)
 }
+const resetPassword = async (
+  payload: {
+    email: string
+    newPassword: string
+  },
+  token: string,
+) => {
+  //checking if the user is exists
+  const user = await User.isUserExists(payload?.email)
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not Found!!')
+  }
+  // checking if the user is deleted
+  const isDeleted = user.isDeleted
+  if (isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is already deleted!!')
+  }
+  // checking if the user is blocked
+  const userStatus = user?.status
+  if (userStatus === 'blocked') {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is already blocked!!')
+  }
+  const decoded = jwt.verify(
+    token,
+    config.jwt_access_secret as string,
+  ) as JwtPayload
+
+  if (payload.email !== decoded.userId) {
+    throw new AppError(httpStatus.FORBIDDEN, 'You ar forbidden!!')
+  }
+  // hash new password
+  const newHashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcrypt_salt_number),
+  )
+  await User.findOneAndUpdate(
+    {
+      id: decoded.userId,
+      role: decoded.role,
+    },
+    {
+      password: newHashedPassword,
+      passwordChangesAt: new Date(),
+    },
+  )
+}
+const toggoleUserRole = async (userId: string) => {
+  const user = await User.findById(userId)
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+  }
+  if (user.isDeleted) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'User already deleted')
+  }
+  if (user.status === 'block') {
+    throw new AppError(httpStatus.BAD_REQUEST, 'User is blocked')
+  }
+  const updateRole = user.role === 'user' ? 'admin' : 'user'
+  const updateUserRole = await User.findByIdAndUpdate(
+    userId,
+    { role: updateRole },
+    { new: true },
+  )
+  return updateUserRole
+}
 
 export const AuthService = {
   createLoginUser,
   createChangePassword,
   createRefreshToken,
   forgetPassword,
+  resetPassword,
+  toggoleUserRole,
 }

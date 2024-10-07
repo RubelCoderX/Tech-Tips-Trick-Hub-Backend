@@ -11,9 +11,9 @@ export interface IPost {
   description: string
   author: Types.ObjectId
   category:
-    | 'Web'
+    | 'Watch'
     | 'Software Engineering'
-    | 'AI'
+    | 'Tech'
     | 'ML'
     | 'VR'
     | 'Mobile'
@@ -22,8 +22,8 @@ export interface IPost {
     | 'Others'
   tags?: string[]
   isPremium: boolean
-  upvotes: number
-  downVotes: number
+  upVotes: Types.ObjectId[]
+  downVotes: Types.ObjectId[]
   comments: IComment[]
   images?: string[]
   status: 'Draft' | 'Published'

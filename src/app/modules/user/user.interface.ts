@@ -3,6 +3,7 @@ import mongoose, { Model } from 'mongoose'
 import { USER_ROLE } from './user.constant'
 
 export type TUser = {
+  _id: mongoose.Types.ObjectId
   name: string
   profession?: string
   userName?: string
@@ -12,14 +13,17 @@ export type TUser = {
   gender: 'male' | 'female'
   birthDate: Date
   isVerified: boolean
-  profileImage?: string
+  profileImage: string
   followers: mongoose.Types.ObjectId[]
   following: mongoose.Types.ObjectId[]
   payments: mongoose.Types.ObjectId[]
   passwordChangedAt: Date
   bio: string
   address?: string
+  status: 'active' | 'block'
   isDeleted: boolean
+  subscriptions: 'Basic Plan' | 'Member' | 'VIP Member'
+  phoneNumber: string
 }
 
 export interface IUserModel extends Model<TUser> {

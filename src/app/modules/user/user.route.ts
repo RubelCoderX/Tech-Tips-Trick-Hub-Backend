@@ -22,8 +22,18 @@ router.get(
 )
 
 router.get('/get-single-user/:id', UserControllers.getSingleUserFromDB)
-router.get('/', auth(USER_ROLE.user), UserControllers.getAllUserFromDB)
+router.get('/', auth(USER_ROLE.admin), UserControllers.getAllUserFromDB)
 router.put('/update-user/:id', UserControllers.updateUserFromDB)
 router.delete('/delete-user/:id', UserControllers.deleteUserFromDB)
+router.put(
+  '/toggle-follow/:id',
+  auth(USER_ROLE.user, USER_ROLE.admin),
+  UserControllers.toggleFollowFromDB,
+)
+router.put(
+  '/manage-status/:id/status',
+  auth(USER_ROLE.admin),
+  UserControllers.userManageStatusFromDB,
+)
 
 export const UserRoutes = router

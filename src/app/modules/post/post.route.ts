@@ -30,7 +30,7 @@ router.get(
 
 router.put(
   '/:postId',
-  auth(USER_ROLE.user, USER_ROLE.admin),
+  // auth(USER_ROLE.user, USER_ROLE.admin),
   validateRequest(PostValidation.updatePostValidation),
   PostControllers.updatePostFromDB,
 )

@@ -28,5 +28,10 @@ router.post(
   AuthController.refreshToken,
 )
 router.post('/forget-password', AuthController.forgetPasswordFromDB)
+router.put(
+  '/toggole-user-role/:userId',
+  auth(USER_ROLE.admin),
+  AuthController.toggoleUserRoleFromDB,
+)
 
 export const AuthRoutes = router

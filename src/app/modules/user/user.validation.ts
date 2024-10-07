@@ -9,12 +9,12 @@ const createUserSchema = z.object({
       .email('Please provide a valid email address')
       .nonempty('Email is required'),
     password: z.string().min(6, 'Password must be at least 6 characters long'),
-    role: z.enum(['user', 'admin']).optional(),
+
     gender: z.enum(['male', 'female'], {
       required_error: 'Gender is required',
     }),
     birthDate: z.string().nonempty('Birth date is required'),
-    profileImage: z.string().optional().nullable(),
+    profileImage: z.string(),
     followers: z.array(z.string()).optional().default([]),
     following: z.array(z.string()).optional().default([]),
     payments: z.array(z.string()).optional().default([]),
