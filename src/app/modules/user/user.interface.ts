@@ -3,6 +3,7 @@ import mongoose, { Model } from 'mongoose'
 import { USER_ROLE } from './user.constant'
 
 export type TUser = {
+  id: any
   _id: mongoose.Types.ObjectId
   name: string
   profession?: string

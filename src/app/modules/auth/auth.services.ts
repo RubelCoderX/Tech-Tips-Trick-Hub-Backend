@@ -182,7 +182,7 @@ const resetPassword = async (
   }
   // checking if the user is blocked
   const userStatus = user?.status
-  if (userStatus === 'blocked') {
+  if (userStatus === 'block') {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is already blocked!!')
   }
   const decoded = jwt.verify(

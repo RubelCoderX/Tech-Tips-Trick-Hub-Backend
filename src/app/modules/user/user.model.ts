@@ -49,12 +49,11 @@ const TUserSchema = new Schema<TUser, IUserModel>(
 // password hashing
 TUserSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this // doc
-  // hashing password and save into DB
-  // Generate userName from email before saving
+  const user = this
+
   if (!user.userName && user.email) {
     const emailParts = user.email.split('@')
-    user.userName = emailParts[0] // Take the part before the "@" symbol
+    user.userName = emailParts[0]
   }
 
   user.password = await bcrypt.hash(

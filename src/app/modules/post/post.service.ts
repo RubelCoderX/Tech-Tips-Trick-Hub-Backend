@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status'
 import AppError from '../../error/AppError'
 import { IComment, IPost } from './post.interface'
@@ -142,8 +143,8 @@ const votePostIntoDB = async (
   const upVotesArray = Array.isArray(post.upVotes) ? post.upVotes : []
   const downVotesArray = Array.isArray(post.downVotes) ? post.downVotes : []
 
-  post.upVotes = upVotesArray.filter(id => id.toString() !== userId)
-  post.downVotes = downVotesArray.filter(id => id.toString() !== userId)
+  post.upVotes = upVotesArray.filter(id => id.toString() !== userId) as any
+  post.downVotes = downVotesArray.filter(id => id.toString() !== userId) as any
 
   if (action === 'upvote') {
     post.upVotes.push(new Types.ObjectId(userId))
