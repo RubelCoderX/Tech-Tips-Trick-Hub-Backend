@@ -6,9 +6,8 @@ import { User } from '../user/user.model'
 import { Types } from 'mongoose'
 
 const createPostIntoDB = async (payload: IPost) => {
-  const post = (await (await Post.create(payload)).populate('author')).populate(
-    'comments.user',
-  )
+  const post = await Post.create(payload)
+
   return post
 }
 
@@ -35,6 +34,7 @@ const getSinglePostFromDB = async (postId: string) => {
 }
 const updatePostIntoDB = async (postId: string, payload: Partial<IPost>) => {
   const post = await Post.findById(postId)
+
   if (!post) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Post not found')
   }
@@ -43,13 +43,14 @@ const updatePostIntoDB = async (postId: string, payload: Partial<IPost>) => {
   }
   const updatedPost = await Post.findByIdAndUpdate(postId, payload, {
     new: true,
-    runValidators: true,
   })
+
   return updatedPost
 }
 
 const deletePostIntoDB = async (postId: string) => {
   const post = await Post.findById(postId)
+
   if (!post) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Post not found')
   }

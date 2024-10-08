@@ -25,7 +25,9 @@ export interface IPost {
   upVotes: Types.ObjectId[]
   downVotes: Types.ObjectId[]
   comments: IComment[]
-  images?: string[]
+  // images?: string[]
+  thumbnailImage: string
+  contents: string
   status: 'Draft' | 'Published'
   pdfVersion?: string
   isDeleted: boolean

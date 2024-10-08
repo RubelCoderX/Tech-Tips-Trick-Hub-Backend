@@ -1,18 +1,18 @@
 import express from 'express'
 
-import { PostValidation } from './post.validation'
+// import { PostValidation } from './post.validation'
 
 import auth from '../../middleware/auth'
 import { USER_ROLE } from '../user/user.constant'
 import { PostControllers } from './post.controller'
-import validateRequest from '../../middleware/validRequest'
+// import validateRequest from '../../middleware/validRequest'
 
 const router = express.Router()
 
 router.post(
-  '/',
+  '/create-post',
   auth(USER_ROLE.user),
-  validateRequest(PostValidation.createPostValidation),
+  // validateRequest(PostValidation.createPostValidation),
   PostControllers.createPostFromDB,
 )
 
@@ -30,8 +30,8 @@ router.get(
 
 router.put(
   '/:postId',
-  // auth(USER_ROLE.user, USER_ROLE.admin),
-  validateRequest(PostValidation.updatePostValidation),
+  auth(USER_ROLE.user, USER_ROLE.admin),
+  // validateRequest(PostValidation.updatePostValidation),
   PostControllers.updatePostFromDB,
 )
 

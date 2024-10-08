@@ -6,6 +6,7 @@ import AppError from '../../error/AppError'
 
 const createPostFromDB = catchAsync(async (req, res) => {
   const result = await PostServices.createPostIntoDB(req.body)
+
   sendResponse(res, {
     success: true,
     message: 'Post created successfully',

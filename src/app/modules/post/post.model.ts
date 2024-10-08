@@ -68,8 +68,9 @@ const postSchema = new Schema(
       },
     ],
     comments: [commentSchema],
-    images: {
-      type: [String],
+    contents: {
+      type: String,
+      required: true,
     },
     status: {
       type: String,
@@ -82,6 +83,10 @@ const postSchema = new Schema(
     isDeleted: {
       type: Boolean,
       default: false,
+    },
+    thumbnailImage: {
+      type: String,
+      required: true,
     },
   },
   { timestamps: true },

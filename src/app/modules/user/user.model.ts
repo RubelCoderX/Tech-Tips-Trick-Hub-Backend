@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable @typescript-eslint/no-this-alias */
 import mongoose, { model, Schema } from 'mongoose'
 import bcrypt from 'bcrypt'
