@@ -7,10 +7,10 @@ import { AuthService } from './auth.services'
 const createLoginUserIntoDB = catchAsync(async (req, res) => {
   const result = await AuthService.createLoginUser(req.body)
   const { accessToken, refreshToken } = result
-  res.cookie('refreshToken', refreshToken, {
-    secure: config.node_dev === 'production',
-    httpOnly: true,
-  })
+  // res.cookie('refreshToken', refreshToken, {
+  //   secure: config.node_dev === 'production',
+  //   httpOnly: true,
+  // })
 
   sendResponse(res, {
     success: true,

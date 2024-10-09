@@ -16,7 +16,10 @@ router.post(
   PostControllers.createPostFromDB,
 )
 
-router.get('/', PostControllers.getAllPostsFromDB)
+// router.get('/', PostControllers.getAllPostsFromDB)
+router.get('/most-liked', PostControllers.getMostLikedPostsFromDB)
+router.get('/lowest-liked', PostControllers.getLowestLikedPostsFromDB)
+
 router.get(
   '/my-posts',
   auth(USER_ROLE.user, USER_ROLE.admin),

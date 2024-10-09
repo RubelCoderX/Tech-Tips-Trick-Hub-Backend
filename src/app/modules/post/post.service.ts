@@ -8,19 +8,101 @@ import { Types } from 'mongoose'
 
 const createPostIntoDB = async (payload: IPost) => {
   const post = await Post.create(payload)
-
   return post
 }
 
-const getAllPostsFromDB = async () => {
+// const getAllPostsFromDB = async ({ searchQuery = '', category = '' }) => {
+//   console.log('searchQuery', searchQuery)
+//   const query: any = {}
+
+//   // Filter by category if provided
+//   if (category) {
+//     query.category = category
+//   }
+
+//   const posts = await Post.find()
+//     .populate('author')
+//     .populate('comments.user')
+//     .populate('upVotes')
+//     .populate('downVotes')
+//     .sort('-createdAt')
+
+//   const sortedPosts = posts.sort((a, b) => b.upVotes.length - a.upVotes.length)
+
+//   const mostLikedPosts = sortedPosts.slice(0, 6)
+
+//   let lowestLikedPosts = sortedPosts.slice(6)
+
+//   if (searchQuery) {
+//     const queryLowerCase = searchQuery.toLowerCase()
+//     lowestLikedPosts = lowestLikedPosts.filter(
+//       post =>
+//         post?.title.toLowerCase().includes(queryLowerCase) ||
+//         post?.description.toLowerCase().includes(queryLowerCase),
+//     )
+//   }
+
+//   return { mostLikedPosts, lowestLikedPosts }
+// }
+// GET /api/posts/most-liked
+export const getMostLikedPosts = async () => {
   const posts = await Post.find()
     .populate('author')
     .populate('comments.user')
     .populate('upVotes')
     .populate('downVotes')
     .sort('-createdAt')
-  return posts
+
+  const sortedPosts = posts.sort(
+    (a, b) => b?.upVotes?.length - a?.upVotes?.length,
+  )
+  const mostLikedPosts = sortedPosts.slice(0, 6)
+
+  return { mostLikedPosts }
 }
+
+export const getLowestLikedPosts = async ({
+  searchQuery = '',
+  category = '',
+}) => {
+  const query: any = {}
+
+  // Filter by category if provided
+  if (category) {
+    query.category = category
+  }
+
+  const posts = await Post.find(query)
+    .populate('author')
+    .populate('comments.user')
+    .populate('upVotes')
+    .populate('downVotes')
+    .sort('-createdAt')
+
+  const sortedPosts = posts.sort(
+    (a, b) => b?.upVotes?.length - a?.upVotes?.length,
+  )
+
+  // Check if there are enough posts before slicing
+  let lowestLikedPosts = []
+  if (sortedPosts.length > 6) {
+    lowestLikedPosts = sortedPosts.slice(6)
+  } else {
+    lowestLikedPosts = sortedPosts
+  }
+
+  // Apply search query if provided
+  if (searchQuery) {
+    const queryLowerCase = searchQuery.toLowerCase()
+    lowestLikedPosts = lowestLikedPosts.filter(
+      post =>
+        (post?.title as string)?.toLowerCase().includes(queryLowerCase) ||
+        (post?.description as string)?.toLowerCase().includes(queryLowerCase),
+    )
+  }
+  return { lowestLikedPosts }
+}
+
 const getSinglePostFromDB = async (postId: string) => {
   const post = await Post.findById(postId)
     .populate('author')
@@ -157,7 +239,30 @@ const votePostIntoDB = async (
   return updatedPost
 }
 
-const myPostsIntoDB = async (email: string) => {
+// const myPostsIntoDB = async (email: string) => {
+//   const user = await User.isUserExists(email)
+//   if (!user) {
+//     throw new AppError(httpStatus.BAD_REQUEST, 'User not found')
+//   }
+//   if (user.isDeleted) {
+//     throw new AppError(httpStatus.BAD_REQUEST, 'User already deleted')
+//   }
+//   const userId = user?._id.toString()
+//   const result = await Post.find({ author: userId, isDeleted: false })
+//     .populate('author')
+//     .populate('comments.user')
+//     .sort('-createdAt')
+//   if (!result) {
+//     throw new AppError(httpStatus.BAD_REQUEST, 'Posts not found')
+//   }
+//   return result
+// }
+
+const myPostsIntoDB = async (
+  email: string,
+  searchQuery: string = '',
+  category: string = '',
+) => {
   const user = await User.isUserExists(email)
   if (!user) {
     throw new AppError(httpStatus.BAD_REQUEST, 'User not found')
@@ -166,18 +271,31 @@ const myPostsIntoDB = async (email: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, 'User already deleted')
   }
   const userId = user?._id.toString()
-  const result = await Post.find({ author: userId, isDeleted: false })
+
+  // Apply search and category filtering in the query
+  const query: any = { author: userId, isDeleted: false }
+  if (searchQuery) {
+    query.title = { $regex: searchQuery, $options: 'i' }
+  }
+  if (category) {
+    query.category = category
+  }
+
+  const result = await Post.find(query)
     .populate('author')
     .populate('comments.user')
     .sort('-createdAt')
+
   if (!result) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Posts not found')
   }
+
   return result
 }
+
 export const PostServices = {
   createPostIntoDB,
-  getAllPostsFromDB,
+  // getAllPostsFromDB,
   getSinglePostFromDB,
   updatePostIntoDB,
   deletePostIntoDB,
@@ -186,4 +304,24 @@ export const PostServices = {
   commentsUpdateIntoDB,
   votePostIntoDB,
   myPostsIntoDB,
+  getMostLikedPosts,
+  getLowestLikedPosts,
 }
+
+/*....
+1. find all posts 
+2. filter the most liked posts
+3. filter the lowest liked posts
+4. if search query is present,filter the lowest like posts based on search query
+5. if category is present,filter the lowest like posts based on category
+6. return the both array of most liked and lowest liked posts
+
+
+
+
+
+
+
+
+
+..*/

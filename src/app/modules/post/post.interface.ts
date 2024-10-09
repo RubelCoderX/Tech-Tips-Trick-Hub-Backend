@@ -23,6 +23,7 @@ export interface IPost {
   tags?: string[]
   isPremium: boolean
   upVotes: Types.ObjectId[]
+  // upVotes: string[]
   downVotes: Types.ObjectId[]
   comments: IComment[]
   // images?: string[]

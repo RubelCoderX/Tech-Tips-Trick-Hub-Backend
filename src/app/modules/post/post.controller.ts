@@ -15,16 +15,48 @@ const createPostFromDB = catchAsync(async (req, res) => {
   })
 })
 
-const getAllPostsFromDB = catchAsync(async (req, res) => {
-  const result = await PostServices.getAllPostsFromDB()
+// const getAllPostsFromDB = catchAsync(async (req, res) => {
+//   const { searchQuery, category } = req.query
+
+//   const result = await PostServices.getAllPostsFromDB({
+//     searchQuery: typeof searchQuery === 'string' ? searchQuery : '',
+//     category: typeof category === 'string' ? category : '',
+//   })
+
+//   sendResponse(res, {
+//     success: true,
+//     message: 'All posts fetched successfully',
+//     statusCode: httpStatus.OK,
+//     data: result,
+//   })
+// })
+
+const getLowestLikedPostsFromDB = catchAsync(async (req, res) => {
+  const { searchQuery, category } = req.query
+
+  const result = await PostServices.getLowestLikedPosts({
+    searchQuery: typeof searchQuery === 'string' ? searchQuery : '',
+    category: typeof category === 'string' ? category : '',
+  })
+
   sendResponse(res, {
     success: true,
-    message: 'All posts fetched successfully',
+    message: 'Lowest liked posts fetched successfully',
     statusCode: httpStatus.OK,
     data: result,
   })
 })
 
+const getMostLikedPostsFromDB = catchAsync(async (req, res) => {
+  const result = await PostServices.getMostLikedPosts()
+
+  sendResponse(res, {
+    success: true,
+    message: 'Most liked posts fetched successfully',
+    statusCode: httpStatus.OK,
+    data: result,
+  })
+})
 const getSinglePostFromDB = catchAsync(async (req, res) => {
   const postId = req.params.postId
 
@@ -112,9 +144,26 @@ const votePost = catchAsync(async (req, res) => {
     data: result,
   })
 })
+// const myPosts = catchAsync(async (req, res) => {
+//   const email = req.user.email
+//   const result = await PostServices.myPostsIntoDB(email)
+//   sendResponse(res, {
+//     success: true,
+//     message: 'My posts fetched successfully',
+//     statusCode: httpStatus.OK,
+//     data: result,
+//   })
+// })
+
 const myPosts = catchAsync(async (req, res) => {
   const email = req.user.email
-  const result = await PostServices.myPostsIntoDB(email)
+  const { searchQuery = '', category = '' } = req.query
+
+  const result = await PostServices.myPostsIntoDB(
+    email,
+    searchQuery as string,
+    category as string,
+  )
   sendResponse(res, {
     success: true,
     message: 'My posts fetched successfully',
@@ -125,7 +174,7 @@ const myPosts = catchAsync(async (req, res) => {
 
 export const PostControllers = {
   createPostFromDB,
-  getAllPostsFromDB,
+  // getAllPostsFromDB,
   getSinglePostFromDB,
   updatePostFromDB,
   deletedPostFromDB,
@@ -134,4 +183,6 @@ export const PostControllers = {
   updateCommentFromDB,
   votePost,
   myPosts,
+  getLowestLikedPostsFromDB,
+  getMostLikedPostsFromDB,
 }
